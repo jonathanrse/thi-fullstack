@@ -23,9 +23,9 @@ const Admin = () => {
 
         console.log(response.data); // Log pour vérifier la structure des données
 
-        // Accéder au tableau d'utilisateurs dans la réponse
-        if (Array.isArray(response.data.users)) {
-          setUsers(response.data.users);
+        // Assure-toi que la réponse est un tableau
+        if (Array.isArray(response.data)) {
+          setUsers(response.data);
         } else {
           console.error('La réponse n\'est pas un tableau:', response.data);
         }

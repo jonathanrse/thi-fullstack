@@ -6,8 +6,8 @@ exports.listUsers = async (req, res) => {
     // Récupérer tous les utilisateurs
     const users = await User.findAll(); // Ou `User.findAll()` selon ton ORM
     
-    // Renvoyer la liste des utilisateurs directement sans message
-    res.status(200).json(users);
+    // Renvoyer les utilisateurs dans un objet avec une propriété users
+    res.status(200).json({ users });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erreur lors de la récupération des utilisateurs" });
