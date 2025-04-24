@@ -10,7 +10,14 @@ exports.createOffer = async (req, res) => {
       return res.status(400).json({ message: 'Champs obligatoires manquants' });
     }
 
-    // Créer l'offre
+    // Récupération de l'agence depuis le middleware
+    const agence = req.agence;
+    
+    if (!agence) {
+      return res.status(400).json({ message: 'Aucune agence associée à cet administrateur' });
+    }
+
+    // Créer l'offre avec l'agence de l'admin connecté
     const nouvelleOffre = await Offers.create({
       title,
       description,
@@ -18,7 +25,8 @@ exports.createOffer = async (req, res) => {
       ville,
       typeContrat,
       dateDebut,
-      duration
+      duration,
+      agence // Ajout de l'agence
     });
 
     // Associer les catégories à l'offre

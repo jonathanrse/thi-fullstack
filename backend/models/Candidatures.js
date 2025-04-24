@@ -43,6 +43,14 @@ const Candidatures = sequelize.define('Candidatures', {
     type: DataTypes.TEXT,
     allowNull: true,
     comment: "Retour donné au candidat"
+  },
+  agence: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isIn: [['aix', 'marseille', 'nice', 'montpellier', 'vitrolles']]
+    },
+    comment: "Agence liée à cette candidature"
   }
 }, {
   timestamps: true

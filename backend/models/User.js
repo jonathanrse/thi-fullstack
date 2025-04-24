@@ -40,6 +40,13 @@ const User = sequelize.define('User', {
     type: DataTypes.ENUM('candidate', 'admin'),
     defaultValue: 'candidate'
   },
+  agence: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isIn: [['aix', 'marseille', 'nice', 'montpellier', 'vitrolles']]
+    }
+  },
   cv1Path: {
     type: DataTypes.STRING,
     allowNull: true,

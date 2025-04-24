@@ -18,9 +18,10 @@ Category.belongsToMany(Offers, { through: 'OfferCategory', as: 'offers' });
 // Candidatures.belongsTo(Offers, { foreignKey: 'offerId', as: 'offer' });
 
 // Synchronisation des modèles avec la base de données
-sequelize.sync({ force: false })  // `force: false` évite de supprimer les données existantes.
+sequelize.sync({ force: false })  // force: true va supprimer et recréer toutes les tables
   .then(() => {
-    console.log('Tables et associations synchronisées');
+    console.log('*** ATTENTION : Toutes les tables ont été recréées, les données précédentes sont perdues ***');
+    console.log('Tables et associations créées avec succès');
   })
   .catch((err) => {
     console.error('Erreur lors de la synchronisation', err);

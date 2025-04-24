@@ -36,6 +36,13 @@ const Offers = sequelize.define('Offers', {
   duration: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  agence: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+      isIn: [['aix', 'marseille', 'nice', 'montpellier', 'vitrolles']]
+    }
   }
 }, {
   timestamps: true

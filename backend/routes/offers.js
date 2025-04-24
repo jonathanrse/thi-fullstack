@@ -4,15 +4,17 @@ const { listOffers } = require('../controllers/offers/listOffersController');
 const { createOffer } = require('../controllers/offers/admin/createOffersController');
 const { updateOffer } = require('../controllers/offers/admin/updateOffersController');
 const { deleteOffer } = require('../controllers/offers/admin/deleteOffersController');
+const { listOffersAdmin } = require('../controllers/offers/admin/listOffersAdminController');
 const { isAdmin } = require('../middlewares/adminMiddleware');
+const checkAgency = require('../middlewares/checkAgency');
 
-// Route pour récupérer toutes les offres d'emploi
+// Route publique - accessible à tous
 router.get('/list', listOffers);
-// Route pour créer des offres
-router.post('/create', createOffer);
-// Route pour modifier des offres
-router.put('/update/:id', isAdmin, updateOffer);
-// Route pour delete une offre
-router.delete('/delete/:id', isAdmin, deleteOffer);
+
+// Routes protégées par agence - accessible seulement aux admins de l'agence correspondante
+router.get('/admin/list', isAdmin, checkAgency, listOffersAdmin);
+router.post('/create', isAdmin, checkAgency, createOffer);
+router.put('/update/:id', isAdmin, checkAgency, updateOffer);
+router.delete('/delete/:id', isAdmin, checkAgency, deleteOffer);
 
 module.exports = router;

@@ -36,7 +36,18 @@ const Offers = () => {
   
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/category/list');
+      const token = Cookies.get('token');
+      
+      if (!token) {
+        console.error("Vous n'êtes pas connecté");
+        return;
+      }
+      
+      const response = await axios.get('http://localhost:3000/api/category/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setCategories(response.data.categories || []);
     } catch (err) {
       console.error('Erreur lors de la récupération des catégories:', err);
@@ -46,7 +57,20 @@ const Offers = () => {
   const fetchOffers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3000/api/offers/list');
+      const token = Cookies.get('token');
+      
+      if (!token) {
+        setError("Vous n'êtes pas connecté. Veuillez vous connecter pour accéder à cette page.");
+        return;
+      }
+      
+      // Utiliser la route admin spécifique
+      const response = await axios.get('http://localhost:3000/api/offers/admin/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
       setOffers(response.data.offers || []);
       setError(null);
     } catch (err) {

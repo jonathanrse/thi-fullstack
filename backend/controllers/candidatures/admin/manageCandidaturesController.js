@@ -1,11 +1,18 @@
 const { Candidatures, User, Offers } = require('../../../models');
 
 /**
- * Récupérer toutes les candidatures (admin)
+ * Récupérer toutes les candidatures (admin) - filtrées par agence
  */
 exports.getAllCandidatures = async (req, res) => {
   try {
-    // Récupérer toutes les candidatures avec les informations de l'utilisateur et de l'offre
+    // Récupérer l'agence de l'admin connecté depuis le middleware
+    const agence = req.agence;
+
+    if (!agence) {
+      return res.status(400).json({ message: 'Aucune agence associée à cet administrateur' });
+    }
+
+    // Récupérer toutes les candidatures pour les offres de cette agence
     const candidatures = await Candidatures.findAll({
       include: [
         {
@@ -16,7 +23,8 @@ exports.getAllCandidatures = async (req, res) => {
         {
           model: Offers,
           as: 'offer',
-          attributes: ['id', 'title', 'description', 'salary', 'ville', 'typeContrat', 'dateDebut', 'duration']
+          attributes: ['id', 'title', 'description', 'salary', 'ville', 'typeContrat', 'dateDebut', 'duration', 'agence'],
+          where: { agence: agence } // Filtrer par agence ici
         }
       ],
       order: [['applicationDate', 'DESC']] // Les plus récentes d'abord
@@ -39,9 +47,11 @@ exports.getAllCandidatures = async (req, res) => {
 exports.getCandidatureDetails = async (req, res) => {
   try {
     const { id } = req.params;
+    const agence = req.agence;
 
     // Récupérer la candidature avec les informations détaillées
-    const candidature = await Candidatures.findByPk(id, {
+    const candidature = await Candidatures.findOne({
+      where: { id },
       include: [
         {
           model: User,
@@ -51,13 +61,14 @@ exports.getCandidatureDetails = async (req, res) => {
         {
           model: Offers,
           as: 'offer',
-          attributes: ['id', 'title', 'description', 'salary', 'ville', 'typeContrat', 'dateDebut', 'duration']
+          attributes: ['id', 'title', 'description', 'salary', 'ville', 'typeContrat', 'dateDebut', 'duration', 'agence'],
+          where: { agence: agence } // Filtrer par agence ici
         }
       ]
     });
 
     if (!candidature) {
-      return res.status(404).json({ message: "Candidature non trouvée" });
+      return res.status(404).json({ message: "Candidature non trouvée ou non autorisée pour cette agence" });
     }
 
     // Détecter le chemin du CV utilisé
@@ -112,11 +123,22 @@ exports.updateCandidatureStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status, adminComment, feedback } = req.body;
+    const agence = req.agence;
 
-    // Vérifier si la candidature existe
-    const candidature = await Candidatures.findByPk(id);
+    // Vérifier si la candidature existe et appartient à l'agence de l'admin
+    const candidature = await Candidatures.findOne({
+      where: { id },
+      include: [
+        {
+          model: Offers,
+          as: 'offer',
+          where: { agence: agence }
+        }
+      ]
+    });
+
     if (!candidature) {
-      return res.status(404).json({ message: "Candidature non trouvée" });
+      return res.status(404).json({ message: "Candidature non trouvée ou non autorisée pour cette agence" });
     }
 
     // Valider le statut
